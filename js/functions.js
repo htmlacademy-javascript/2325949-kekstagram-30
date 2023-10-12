@@ -4,7 +4,7 @@ const bob = 1010101;
 
 function lengthCheck (string, maxLength) {
   string += '';
-  return string.length <= maxLength ? true : false;
+  return string.length <= maxLength;
 }
 lengthCheck(bob, 10);
 
@@ -20,7 +20,7 @@ function palyCheck (string) {
   for (let i = string.length - 1; i >= 0; i--) {
     stringReverse += string[i];
   }
-  return string === stringReverse ? true : false;
+  return string === stringReverse;
 }
 
 palyCheck(mary);

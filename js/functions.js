@@ -43,3 +43,21 @@ function digitParse (string) {
 }
 
 digitParse(jean);
+
+// Четвертая функция
+
+const timeConvert = (stringTime) => {
+  const dots = stringTime.indexOf(':');
+  const intTime = parseInt(stringTime.slice(0,dots),10) * 60 + parseInt(stringTime.slice(dots + 1),10);
+  return intTime;
+};
+
+const overtime = (dayBegin,dayEnd,meetupBegin,duration) => {
+  duration = +duration;
+  const beginTime = timeConvert(dayBegin);
+  const endTime = timeConvert(dayEnd);
+  const meetupTime = timeConvert(meetupBegin);
+  return (meetupTime >= beginTime) && ((meetupTime + duration) <= endTime);
+};
+
+overtime('08:5','17:05','14:00','90');

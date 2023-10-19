@@ -1,3 +1,3 @@
-import { generatePics } from './data';
+import { renderPics } from './render';
 
-generatePics();
+renderPics();

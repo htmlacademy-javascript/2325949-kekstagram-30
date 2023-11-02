@@ -2,4 +2,6 @@ const getRandomInteger = (min, max) => Math.floor(min + Math.random() * (max + 1
 
 const getRandomArrayEl = (array) => array[getRandomInteger(0, array.length - 1)];
 
-export {getRandomInteger, getRandomArrayEl};
+const isEscapeKey = (evt) => evt.code === 'Escape';
+
+export {getRandomInteger, getRandomArrayEl, isEscapeKey};

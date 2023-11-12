@@ -90,6 +90,7 @@ const generatePics = () => {
   for (let i = 1; i <= PICS_COUNT; i++) {
     pics.push(createPic(i));
   }
+
   return pics;
 };
 

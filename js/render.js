@@ -1,19 +1,30 @@
-import { generatePics } from './data';
+import { generatePics } from './data.js';
+import { showBigPicture } from './popup.js';
 
 const pics = generatePics();
 
 const picList = document.querySelector('.pictures');
-const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+const picTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const container = document.createDocumentFragment();
 
+const renderPic = (picture) => {
+  const pictureElement = picTemplate.cloneNode(true);
+  pictureElement.querySelector('.picture__img').src = picture.url;
+  pictureElement.querySelector('.picture__img').alt = picture.description;
+  pictureElement.querySelector('.picture__likes').textContent = picture.likes;
+  pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
+  pictureElement.addEventListener('click', () => {
+    showBigPicture(picture);
+  });
+
+  return pictureElement;
+};
+
+
 const renderPics = () => {
-  pics.forEach(({url, description, likes, comments}) => {
-    const picture = pictureTemplate.cloneNode(true);
-    picture.querySelector('.picture__img').src = url;
-    picture.querySelector('.picture__img').alt = description;
-    picture.querySelector('.picture__likes').textContent = likes;
-    picture.querySelector('.picture__comments').textContent = comments.length;
-    container.append(picture);
+  pics.forEach((picture) => {
+    const pictureElement = renderPic(picture);
+    container.append(pictureElement);
   });
   picList.append(container);
 };

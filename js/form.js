@@ -1,83 +1,96 @@
 import '../vendor/pristine/pristine.min.js';
+import { getErrorMessage, validateHashtags } from './hashrag-pristine.js';
+import { onMinusBtnClick, onPlusBtnClick } from './zoom.js';
+import { sliderField, image } from './effects.js';
 import { isEscapeKey } from './util.js';
 
-const MAX_COMMENT_LENGTH = 140;
-const MAX_HASHTAG_NUMBER = 5;
 
 const uploadForm = document.querySelector('.img-upload__form');
-
+const formInput = uploadForm.querySelector('.img-upload__input');
 const formOverlay = uploadForm.querySelector('.img-upload__overlay');
 const formCloseBtn = uploadForm.querySelector('.img-upload__cancel');
-
-const formInput = uploadForm.querySelector('.img-upload__input');
+const formSubmitBtn = uploadForm.querySelector('.img-upload__submit');
 const hashtagInput = uploadForm.querySelector('.text__hashtags');
 const commentInput = uploadForm.querySelector('.text__description');
+const minusBtn = uploadForm.querySelector('.scale__control--smaller');
+const plusBtn = uploadForm.querySelector('.scale__control--bigger');
 
-const hashtagRegExp = /^#[\wа-яё]{1,19}$/i;
+
+const pristine = new Pristine(uploadForm, {
+  classTo: 'img-upload__field-wrapper',
+  errorClass: 'img-upload__field-wrapper--invalid',
+  successClass: 'img-upload__field-wrapper--valid',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div',
+  errorTextClass: 'form__error'
+});
+
+function resetFrom() {
+  uploadForm.reset();
+  pristine.reset();
+
+  formInput.value = '';
+  hashtagInput.value = '';
+  commentInput.value = '';
+
+  sliderField.classList.add('hidden');
+  image.style.transform = 'scale(1)';
+  image.style.filter = 'none';
+}
 
 const closeForm = () => {
   formOverlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  formCloseBtn.removeEventListener('click',closeForm);
-  document.removeEventListener('keydown',closeFormOnEsc);
-
   resetFrom();
 };
+
+const onFormCloseBtnClick = () => {
+  closeForm();
+
+  formCloseBtn.removeEventListener('click',onFormCloseBtnClick);
+};
+
+const onEscKeyDown = (evt) => {
+  if (isEscapeKey(evt) &&
+  !evt.target.classList.contains('text__hashtags') &&
+  !evt.target.classList.contains('text__description')
+  ) {
+    evt.preventDefault();
+    closeForm();
+    document.removeEventListener('keydown', onEscKeyDown);
+  }
+};
+
 
 const openForm = () => {
   formOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  formCloseBtn.addEventListener('click',closeForm);
-  document.addEventListener('keydown',closeFormOnEsc);
 };
 
-function closeFormOnEsc (evt) {
-  if (isEscapeKey(evt)) {
-    closeForm();
-  }
-}
+const onUploadFormChange = () => {
+  openForm();
 
-function resetFrom() {
-  formInput.value = '';
-  hashtagInput.value = '';
-  commentInput.value = '';
-}
-
-formInput.addEventListener('change',openForm);
-
-const pristine = new Pristine(uploadForm, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper--error',
-});
-
-const validateHashtag = (value) => {
-  const hashtagArr = value.split(' ');
-
-  return !(hashtagArr.find((item) => !hashtagRegExp.test(item))) &&
-        !(hashtagArr.length > MAX_HASHTAG_NUMBER) &&
-        (new Set(hashtagArr).size === hashtagArr.length);
+  formCloseBtn.addEventListener('click', onFormCloseBtnClick);
+  document.addEventListener('keydown',onEscKeyDown);
 };
 
-const getHashtagErrorMessage = () => {
-  const hashtagArr = hashtagInput.value.split(' ');
 
-  if (hashtagArr.find((item) => !hashtagRegExp.test(item))) {
-    return 'Введён невалидный хэш-тег';
-  }
-  if (hashtagArr.length > MAX_HASHTAG_NUMBER) {
-    return 'Превышено количество хэш-тегов';
-  }
-  if (new Set(hashtagArr).size !== hashtagArr.length) {
-    return 'Хэш-теги не должны повторяться';
+formInput.addEventListener('change', onUploadFormChange);
+
+minusBtn.addEventListener('click', onMinusBtnClick);
+plusBtn.addEventListener('click', onPlusBtnClick);
+
+pristine.addValidator(hashtagInput,validateHashtags,getErrorMessage);
+
+const onHashtagInput = () => {
+  if (pristine.validate()) {
+    formSubmitBtn.disabled = false;
+  } else {
+    formSubmitBtn.disabled = true;
   }
 };
 
-pristine.addValidator(hashtagInput, validateHashtag, getHashtagErrorMessage);
-
-const validateComment = (value) => value.length < MAX_COMMENT_LENGTH;
-
-pristine.addValidator(commentInput, validateComment, `Длина комментария больше ${MAX_COMMENT_LENGTH} символов`);
+hashtagInput.addEventListener('input',onHashtagInput);
 
 uploadForm.addEventListener('submit', (evt) => {
   if (!pristine.validate()) {

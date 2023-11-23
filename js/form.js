@@ -3,6 +3,8 @@ import { getErrorMessage, validateHashtags } from './hashrag-pristine.js';
 import { onMinusBtnClick, onPlusBtnClick } from './zoom.js';
 import { sliderField, image } from './effects.js';
 import { isEscapeKey } from './util.js';
+import { onSuccess, onFail } from './status-messages.js';
+import { uploadData } from './fetch.js';
 
 
 const uploadForm = document.querySelector('.img-upload__form');
@@ -22,7 +24,7 @@ const pristine = new Pristine(uploadForm, {
   successClass: 'img-upload__field-wrapper--valid',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextTag: 'div',
-  errorTextClass: 'form__error'
+  errorTextClass: 'img-upload__field-wrapper--error'
 });
 
 function resetFrom() {
@@ -32,34 +34,36 @@ function resetFrom() {
   formInput.value = '';
   hashtagInput.value = '';
   commentInput.value = '';
+  formSubmitBtn.disabled = true;
 
   sliderField.classList.add('hidden');
   image.style.transform = 'scale(1)';
   image.style.filter = 'none';
 }
 
-const closeForm = () => {
-  formOverlay.classList.add('hidden');
-  document.body.classList.remove('modal-open');
-  resetFrom();
-};
-
-const onFormCloseBtnClick = () => {
-  closeForm();
-
-  formCloseBtn.removeEventListener('click',onFormCloseBtnClick);
-};
 
 const onEscKeyDown = (evt) => {
   if (isEscapeKey(evt) &&
   !evt.target.classList.contains('text__hashtags') &&
-  !evt.target.classList.contains('text__description')
+  !evt.target.classList.contains('text__description') &&
+  document.querySelector('.error') === null
   ) {
     evt.preventDefault();
     closeForm();
-    document.removeEventListener('keydown', onEscKeyDown);
   }
 };
+
+const onFormCloseBtnClick = () => {
+  closeForm();
+};
+
+function closeForm() {
+  formOverlay.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  resetFrom();
+  formCloseBtn.removeEventListener('click',onFormCloseBtnClick);
+  document.removeEventListener('keydown', onEscKeyDown);
+}
 
 
 const openForm = () => {
@@ -92,9 +96,18 @@ const onHashtagInput = () => {
 
 hashtagInput.addEventListener('input',onHashtagInput);
 
-uploadForm.addEventListener('submit', (evt) => {
-  if (!pristine.validate()) {
+const uplaodFormSubmit = () => {
+  uploadForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
-  }
-});
 
+    const isValid = pristine.validate();
+
+    if(isValid) {
+      const formData = new FormData(evt.target);
+
+      uploadData(onSuccess, onFail, 'POST', formData);
+    }
+  });
+};
+
+export {uplaodFormSubmit, closeForm};

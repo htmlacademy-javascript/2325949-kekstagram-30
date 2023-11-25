@@ -6,6 +6,7 @@ import { isEscapeKey } from './util.js';
 import { onSuccess, onFail } from './status-messages.js';
 import { uploadData } from './fetch.js';
 
+const COMMENT_FIELD_ERROR = 'Длина комментария больше 140 символов';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const formInput = uploadForm.querySelector('.img-upload__input');
@@ -86,6 +87,10 @@ plusBtn.addEventListener('click', onPlusBtnClick);
 
 pristine.addValidator(hashtagInput,validateHashtags,getErrorMessage);
 
+const validateCommentMessage = (value) => value.length <= 140;
+
+pristine.addValidator(commentInput, validateCommentMessage, COMMENT_FIELD_ERROR);
+
 const onHashtagInput = () => {
   if (pristine.validate()) {
     formSubmitBtn.disabled = false;
@@ -96,18 +101,26 @@ const onHashtagInput = () => {
 
 hashtagInput.addEventListener('input',onHashtagInput);
 
-const uplaodFormSubmit = () => {
-  uploadForm.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-
-    const isValid = pristine.validate();
-
-    if(isValid) {
-      const formData = new FormData(evt.target);
-
-      uploadData(onSuccess, onFail, 'POST', formData);
-    }
-  });
+const blockSubmitBtn = () => {
+  formSubmitBtn.disabled = true;
 };
 
-export {uplaodFormSubmit, closeForm};
+const unblockSubmitBtn = () => {
+  document.querySelector('.img-upload__submit').disabled = false;
+};
+
+
+uploadForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  const isValid = pristine.validate();
+
+  if(isValid) {
+    const formData = new FormData(evt.target);
+    blockSubmitBtn();
+
+    uploadData(onSuccess, onFail, 'POST', formData);
+  }
+});
+
+export {closeForm, unblockSubmitBtn};

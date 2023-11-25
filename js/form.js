@@ -7,6 +7,7 @@ import { onSuccess, onFail } from './status-messages.js';
 import { uploadData } from './fetch.js';
 
 const COMMENT_FIELD_ERROR = 'Длина комментария больше 140 символов';
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
 const uploadForm = document.querySelector('.img-upload__form');
 const formInput = uploadForm.querySelector('.img-upload__input');
@@ -17,6 +18,8 @@ const hashtagInput = uploadForm.querySelector('.text__hashtags');
 const commentInput = uploadForm.querySelector('.text__description');
 const minusBtn = uploadForm.querySelector('.scale__control--smaller');
 const plusBtn = uploadForm.querySelector('.scale__control--bigger');
+const imgPreview = uploadForm.querySelector('.img-upload__preview img');
+const effectsPreview = uploadForm.querySelectorAll('.effects__preview');
 
 
 const pristine = new Pristine(uploadForm, {
@@ -74,6 +77,19 @@ const openForm = () => {
 
 const onUploadFormChange = () => {
   openForm();
+
+  const file = formInput.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    imgPreview.src = URL.createObjectURL(file);
+
+    effectsPreview.forEach((preview) => {
+      preview.style.backgroundImage = `url(${imgPreview.src})`;
+    });
+  }
 
   formCloseBtn.addEventListener('click', onFormCloseBtnClick);
   document.addEventListener('keydown',onEscKeyDown);

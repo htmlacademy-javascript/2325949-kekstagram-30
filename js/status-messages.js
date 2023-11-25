@@ -1,5 +1,5 @@
 import { isEscapeKey } from './util.js';
-import { closeForm } from './form.js';
+import { closeForm, unblockSubmitBtn } from './form.js';
 
 const DATA_ERROR_SHOWN_TIME = 5000;
 
@@ -57,11 +57,13 @@ const showStatusMessage = (messageType) => {
 
 const onSuccess = () => {
   showStatusMessage(successMessage);
+  unblockSubmitBtn();
   closeForm();
 };
 
 const onFail = () => {
   showStatusMessage(errorMessage);
+  unblockSubmitBtn();
 };
 
 const showDataErrorMessage = () => {

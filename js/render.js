@@ -1,11 +1,16 @@
-import { generatePics } from './data.js';
-import { showBigPicture } from './popup.js';
 
-const pics = generatePics();
+import { showBigPicture } from './popup.js';
 
 const picList = document.querySelector('.pictures');
 const picTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const container = document.createDocumentFragment();
+
+const clearPics = () => {
+  const picsRendered = picList.querySelectorAll('.picture');
+  if (picsRendered) {
+    picsRendered.forEach((picture) => picture.remove());
+  }
+};
 
 const renderPic = (picture) => {
   const pictureElement = picTemplate.cloneNode(true);
@@ -22,13 +27,13 @@ const renderPic = (picture) => {
 };
 
 
-const renderPics = () => {
+const renderPics = (pics) => {
   pics.forEach((picture) => {
     const pictureElement = renderPic(picture);
     container.append(pictureElement);
   });
+  clearPics();
   picList.append(container);
 };
 
 export {renderPics};
-

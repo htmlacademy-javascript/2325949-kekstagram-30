@@ -1,9 +1,8 @@
 // import { generatePics } from './data.js';
 import { loadData } from './fetch.js';
 import { renderPics } from './render.js';
-import { uplaodFormSubmit } from './form.js';
 import { showDataErrorMessage } from './status-messages.js';
-import './form.js';
+import './sortout.js';
 
 let pics = [];
 
@@ -15,6 +14,5 @@ const onSuccess = (data) => {
 
 loadData(onSuccess, showDataErrorMessage);
 
-uplaodFormSubmit();
-
+export {pics};
 

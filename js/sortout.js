@@ -1,38 +1,43 @@
-import {debounce, shuffleArray, sortByComments} from './util.js';
+import {debounce, getRandomSet} from './util.js';
 import {renderPics} from './render.js';
-import {pics} from './main.js';
 
-const SHUFFLED_PHOTOS_COUNT = 10;
-const ACTIVE_CLASS = 'img-filters__button--active';
+const RANDOM_PICS_LENGTH = 10;
+const DELAY = 500;
 
-const imgFilters = document.querySelector('.img-filters');
-const imgFiltersForm = imgFilters.querySelector('.img-filters__form');
+const filterContainerElement = document.querySelector('.img-filters');
+const filterElement = filterContainerElement.querySelector('.img-filters__form');
 
-const availableFilters = {
-  'filter-default': () => pics.slice(),
-  'filter-random': () => shuffleArray(pics.slice()).slice(0, SHUFFLED_PHOTOS_COUNT),
-  'filter-discussed': () => sortByComments(pics.slice())
+let pics = [];
+
+const getHotPics = (data) => {
+  const sortPics = data.slice().sort((first, second) => second.comments.length - first.comments.length);
+  return sortPics;
 };
 
-const isButton = (evt) => evt.target.tagName === 'BUTTON';
+const changeActiveFilterBtnClass = (evt) => {
+  filterElement.querySelector('.img-filters__button--active').classList.remove('img-filters__button--active');
+  evt.target.classList.add('img-filters__button--active');
+};
 
-const onImgFiltersFormClick = debounce((evt) => {
-  if (isButton(evt)) {
-    renderPics(availableFilters[evt.target.id]());
-  }
-});
-
-const onButtonClick = (evt) => {
-  if (isButton(evt)) {
-    const selectedButton = imgFiltersForm.querySelector(`.${ACTIVE_CLASS}`);
-
-    if (selectedButton) {
-      selectedButton.classList.remove(ACTIVE_CLASS);
+const setFilter = (cb) => {
+  filterElement.addEventListener('click', (evt) => {
+    let newPics = pics.slice();
+    changeActiveFilterBtnClass(evt);
+    switch (evt.target.id) {
+      case 'filter-random':
+        newPics = getRandomSet(pics, RANDOM_PICS_LENGTH);
+        break;
+      case 'filter-discussed':
+        newPics = getHotPics(pics);
     }
-
-    evt.target.classList.add(ACTIVE_CLASS);
-  }
+    cb(newPics);
+  });
 };
 
-imgFiltersForm.addEventListener('click', onImgFiltersFormClick);
-imgFiltersForm.addEventListener('click', onButtonClick);
+const deployFilter = (data) => {
+  pics = data.slice();
+  filterContainerElement.classList.remove('img-filters--inactive');
+  setFilter(debounce(renderPics, DELAY));
+};
+
+export { deployFilter };

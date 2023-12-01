@@ -20,13 +20,13 @@ const closeMessage = () => {
   message.remove();
 };
 
-const onEscKeydown = (evt) => {
+const onEscKeyPush = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
 
     closeMessage();
 
-    document.removeEventListener('keydown', onEscKeydown);
+    document.removeEventListener('keydown', onEscKeyPush);
     document.removeEventListener('click', onMouseButtonClick);
 
     document.querySelector('.img-upload__submit').blur();
@@ -41,7 +41,7 @@ function onMouseButtonClick (evt) {
     closeMessage();
 
     document.removeEventListener('click', onMouseButtonClick);
-    document.removeEventListener('keydown', onEscKeydown);
+    document.removeEventListener('keydown', onEscKeyPush);
   }
 }
 
@@ -51,7 +51,7 @@ const showStatusMessage = (messageType) => {
   fragment.append(messageType);
   document.body.append(fragment);
 
-  document.addEventListener('keydown', onEscKeydown);
+  document.addEventListener('keydown', onEscKeyPush);
   document.addEventListener('click', onMouseButtonClick);
 };
 

@@ -1,5 +1,5 @@
 import '../vendor/pristine/pristine.min.js';
-import { getErrorMessage, validateHashtags } from './hashrag-pristine.js';
+import { getErrorMessage, validateHashtags } from './hashtag-pristine.js';
 import { onMinusBtnClick, onPlusBtnClick } from './zoom.js';
 import { sliderField, image } from './effects.js';
 import { isEscapeKey } from './util.js';
@@ -46,7 +46,7 @@ function resetFrom() {
 }
 
 
-const onEscKeyDown = (evt) => {
+const onEscKeyPush = (evt) => {
   if (isEscapeKey(evt) &&
   !evt.target.classList.contains('text__hashtags') &&
   !evt.target.classList.contains('text__description') &&
@@ -66,7 +66,7 @@ function closeForm() {
   document.body.classList.remove('modal-open');
   resetFrom();
   formCloseBtn.removeEventListener('click',onFormCloseBtnClick);
-  document.removeEventListener('keydown', onEscKeyDown);
+  document.removeEventListener('keydown', onEscKeyPush);
 }
 
 
@@ -92,7 +92,7 @@ const onUploadFormChange = () => {
   }
 
   formCloseBtn.addEventListener('click', onFormCloseBtnClick);
-  document.addEventListener('keydown',onEscKeyDown);
+  document.addEventListener('keydown',onEscKeyPush);
 };
 
 

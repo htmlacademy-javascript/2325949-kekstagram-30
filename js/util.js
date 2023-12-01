@@ -4,20 +4,13 @@ const getRandomArrayEl = (array) => array[getRandomInteger(0, array.length - 1)]
 
 const isEscapeKey = (evt) => evt.code === 'Escape';
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+const getRandomSet = (data, length) => {
+  const randomSet = new Set();
+  while (randomSet.size < length) {
+    randomSet.add(getRandomArrayEl(data));
   }
-  return array;
-}
-
-const sortByComments = (array) => {
-  array.sort((a, b) => b.comments.length - a.comments.length);
-
-  return array;
+  return randomSet;
 };
-
 
 const debounce = (callback, timeoutDelay = 500) => {
 
@@ -33,4 +26,4 @@ const debounce = (callback, timeoutDelay = 500) => {
 };
 
 
-export {getRandomInteger, getRandomArrayEl, isEscapeKey, debounce, shuffleArray, sortByComments};
+export {getRandomInteger, getRandomArrayEl, isEscapeKey, debounce, getRandomSet};
